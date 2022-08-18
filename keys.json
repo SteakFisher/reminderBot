@@ -1,0 +1,5 @@
+{"web":
+  {
+    "redirect_uris":["http://localhost:3000/api/auth/google/calendars/token"]
+  }
+}

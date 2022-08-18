@@ -1,0 +1,26 @@
+{
+  "name": "reminderbot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "await-timeout": "^1.1.1",
+    "axios": "^0.27.2",
+    "bluebird": "^3.7.2",
+    "datetime-js": "^4.0.0",
+    "discord.js": "^14.2.0",
+    "dotenv": "^16.0.1",
+    "express": "^4.18.1",
+    "google-auth-library": "^8.1.1",
+    "googleapis": "^105.0.0",
+    "http-terminator": "^3.2.0",
+    "mysql": "^2.18.1",
+    "server-destroy": "^1.0.1"
+  }
+}
