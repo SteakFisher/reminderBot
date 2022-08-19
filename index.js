@@ -3,12 +3,10 @@ const {google} = require('googleapis');
 const {OAuth2Client} = require('google-auth-library');
 const keys = require('./keys.json');
 const constants = require('./constants.json');
-const http = require('http');
-const url = require('url');
-const destroyer = require('server-destroy');
 const calendar = google.calendar('v3');
 const mysql = require('mysql');
 const customFuncs = require("./customFunctions");
+const cmdSetup = require("./cmdSetup");
 
 require('dotenv').config();
 let con = {}
@@ -43,55 +41,10 @@ client.on("ready", () => {
         dateStrings: true
     });
 
-    con.connect(function(err) {
-        if (err) console.log(err);
-        console.log("Connected!");
-    });
-
-    con.query("CREATE DATABASE IF NOT EXISTS reminderBot", (err, result) => {
-      if(err) console.log(err)
-      console.log("Database created");
-    })
-    con.query("USE reminderBot", (err, result) => {
-        if(err) console.log(err)
-        console.log("Database selected");
-    })
-    con.query("CREATE TABLE IF NOT EXISTS reminders (id INT AUTO_INCREMENT PRIMARY KEY, messageId VARCHAR(30) UNIQUE, guildId VARCHAR(30), title varchar(255), startDate DATETIME, endDate DATETIME)", (err, result) => {
-        if(err) console.log(err)
-        console.log("Table created");
-    })
+    customFuncs.sqlSetup(con);
 
     let commands = client.application.commands;
-    commands.create({
-        name: 'add-event',
-        description: 'Send an "Add to Google Calender" button',
-        options: [
-            {
-                name: 'title',
-                description: 'The title of the event',
-                required: true,
-                type: Discord.ApplicationCommandOptionType.String
-            },
-            {
-                name: 'start-time',
-                description: 'The start time (in GMT) of the event in the format YYYY-MM-DD HH:MM:SS',
-                required: true,
-                type: Discord.ApplicationCommandOptionType.String
-            },
-            {
-                name: 'end-time',
-                description: 'The end time (in GMT) of the event in the format YYYY-MM-DD HH:MM:SS',
-                required: true,
-                type: Discord.ApplicationCommandOptionType.String
-            },
-            {
-                name: 'channel',
-                description: 'The channel to send the button to',
-                required: true,
-                type: Discord.ApplicationCommandOptionType.Channel
-            }
-        ]
-    })
+    cmdSetup.cmdSetup(commands);
     console.log(`Logged in as ${client.user.tag}!`)
 })
 
@@ -135,7 +88,7 @@ client.on("interactionCreate", async (interaction) => {
                 .setTitle(title)
                 .setColor("#00ffef")
                 .setTimestamp()
-                .setDescription(`**Start time:**\n ${startTimeTemp[0]} ${startTimeTemp[1]}\n**End time:**\n ${endTimeTemp[0]} ${endTimeTemp[1]}`)
+                .setDescription(`**Start time:**\n ${startTimeTemp[0]} ${startTimeTemp[1]}\n\n**End time:**\n ${endTimeTemp[0]} ${endTimeTemp[1]}`)
 
             let messageId = "";
             channel.send({
@@ -156,11 +109,57 @@ client.on("interactionCreate", async (interaction) => {
 
     if(interaction.isButton()){
         if(interaction.customId === "set-event"){
-            const embed = new Discord.EmbedBuilder()
-                .setTitle("Verification")
-                .setColor("#00ffef")
-                .setDescription(`[**Verify your Google Account**](${authorizeUrl})`)
-                .setTimestamp()
+            con.query(`SELECT * FROM users WHERE userId = '${interaction.author.id}'`, async (err, result) => {
+                if(err) console.log(err)
+                if (result.length === 0) {
+                    const embed = new Discord.EmbedBuilder()
+                        .setTitle("Verification")
+                        .setColor("#00ffef")
+                        .setDescription(`[**Verify your Google Account**](${authorizeUrl})`)
+                        .setTimestamp()
+
+                    interaction.reply({
+                        embeds: [embed],
+                        ephemeral: true
+                    })
+
+                    const promise1 = new Promise((resolve, reject) => {
+                        setTimeout(resolve, 30000, "Timed Out");
+                    });
+
+                    const promise2 = new Promise(async (resolve, reject) => {
+                        resolve(await customFuncs.getAuthTokens(oAuth2Client, interaction.message, con))
+                    })
+
+                    let r = await Promise.race([promise1, promise2]).then(async (value) => {
+                        return value
+                    });
+
+                    if(r.tokens.scope !== "https://www.googleapis.com/auth/calendar.events"){
+                        return interaction.reply({
+                            content: "You did not grant relevant permissions, please check all boxes during verification and try again.",
+                        })
+                    }
+
+                    con.query(`INSERT INTO users (userId, access_token, refresh_token, expiry_date)
+                               VALUES ('${interaction.author.id}', '${r.tokens.access_token}',
+                                       '${r.tokens.refresh_token}, ${r.tokens.expiry_date}
+                                                   ')`, (err, result) => {
+                        if (err) console.log(err)
+                    })
+
+                    oAuth2Client.setCredentials(r.tokens);
+                }
+                else{
+                    oAuth2Client.setCredentials({
+                        access_token: result[0].access_token,
+                        refresh_token: result[0].refresh_token,
+                        scope: "https://www.googleapis.com/auth/calendar.events",
+                        token_type: "Bearer",
+                        expiry_date: result[0].expiry_date
+                    });
+                }
+            })
 
             let title = ""
             let startTimeTemp = []
@@ -168,7 +167,6 @@ client.on("interactionCreate", async (interaction) => {
 
             con.query(`SELECT * FROM reminders WHERE messageId = '${interaction.message.id}'`, (err, result) => {
                 if(err) console.log(err);
-                console.log(result)
                 title = result[0]["title"];
                 startTimeTemp = result[0]["startDate"].split(" ");
                 endTimeTemp = result[0]["endDate"].split(" ");
@@ -176,24 +174,6 @@ client.on("interactionCreate", async (interaction) => {
                 startTimeTemp = `${startTimeTemp[0]}T${startTimeTemp[1]}`;
                 endTimeTemp = `${endTimeTemp[0]}T${endTimeTemp[1]}`;
             })
-
-            interaction.reply({
-                embeds: [embed],
-                ephemeral: true
-            })
-
-            const promise1 = new Promise((resolve, reject) => {
-                setTimeout(resolve, 30000, "Timed Out");
-            });
-
-            const promise2 = new Promise(async (resolve, reject) => {
-                resolve(await customFuncs.getAuthClient(oAuth2Client))
-            })
-
-            oAuth2Client = await Promise.race([promise1, promise2]).then(async (value) => {
-                return value
-            });
-
 
             if(oAuth2Client === 'Timed Out') return console.log(oAuth2Client)
             google.options({auth: oAuth2Client});
