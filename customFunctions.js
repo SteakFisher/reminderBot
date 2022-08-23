@@ -59,7 +59,7 @@ module.exports = {
             if(err) console.log(err)
             console.log("Table created");
         })
-        con.query("CREATE TABLE IF NOT EXISTS users (userId VARCHAR(30) PRIMARY KEY, access_token VARCHAR(255), refresh_token VARCHAR(255), expiry_date int)", (err, result) => {
+        con.query("CREATE TABLE IF NOT EXISTS users (userId VARCHAR(30) PRIMARY KEY, access_token VARCHAR(255), refresh_token VARCHAR(255), expiry_date BIGINT)", (err, result) => {
             if(err) console.log(err)
             console.log("Table created");
         })

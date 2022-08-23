@@ -10,6 +10,7 @@ const cmdSetup = require("./cmdSetup");
 
 require('dotenv').config();
 let con = {}
+let result = {};
 
 let oAuth2Client = new OAuth2Client(
     process.env.CLIENT_ID,
@@ -90,7 +91,6 @@ client.on("interactionCreate", async (interaction) => {
                 .setTimestamp()
                 .setDescription(`**Start time:**\n ${startTimeTemp[0]} ${startTimeTemp[1]}\n\n**End time:**\n ${endTimeTemp[0]} ${endTimeTemp[1]}`)
 
-            let messageId = "";
             channel.send({
                 embeds: [embed],
                 components: [row]
@@ -109,8 +109,11 @@ client.on("interactionCreate", async (interaction) => {
 
     if(interaction.isButton()){
         if(interaction.customId === "set-event"){
-            con.query(`SELECT * FROM users WHERE userId = '${interaction.author.id}'`, async (err, result) => {
+            let sent = false;
+            con.query(`SELECT * FROM users WHERE userId = '${interaction.user.id}'`, async (err, sqlResult) => {
                 if(err) console.log(err)
+                result = sqlResult
+
                 if (result.length === 0) {
                     const embed = new Discord.EmbedBuilder()
                         .setTitle("Verification")
@@ -122,6 +125,7 @@ client.on("interactionCreate", async (interaction) => {
                         embeds: [embed],
                         ephemeral: true
                     })
+                    sent = true;
 
                     const promise1 = new Promise((resolve, reject) => {
                         setTimeout(resolve, 30000, "Timed Out");
@@ -141,10 +145,7 @@ client.on("interactionCreate", async (interaction) => {
                         })
                     }
 
-                    con.query(`INSERT INTO users (userId, access_token, refresh_token, expiry_date)
-                               VALUES ('${interaction.author.id}', '${r.tokens.access_token}',
-                                       '${r.tokens.refresh_token}, ${r.tokens.expiry_date}
-                                                   ')`, (err, result) => {
+                    con.query(`INSERT INTO users (userId, access_token, refresh_token, expiry_date) VALUES ('${interaction.user.id}', '${r.tokens.access_token}', '${r.tokens.refresh_token}', ${r.tokens.expiry_date})`, (err, result) => {
                         if (err) console.log(err)
                     })
 
@@ -159,39 +160,50 @@ client.on("interactionCreate", async (interaction) => {
                         expiry_date: result[0].expiry_date
                     });
                 }
-            })
 
-            let title = ""
-            let startTimeTemp = []
-            let endTimeTemp = []
+                let title = ""
 
-            con.query(`SELECT * FROM reminders WHERE messageId = '${interaction.message.id}'`, (err, result) => {
-                if(err) console.log(err);
-                title = result[0]["title"];
-                startTimeTemp = result[0]["startDate"].split(" ");
-                endTimeTemp = result[0]["endDate"].split(" ");
+                let startTime = ""
+                let endTime = ""
+                let resultSql;
 
-                startTimeTemp = `${startTimeTemp[0]}T${startTimeTemp[1]}`;
-                endTimeTemp = `${endTimeTemp[0]}T${endTimeTemp[1]}`;
-            })
+                con.query(`SELECT * FROM reminders WHERE messageId = '${interaction.message.id}'`, async (err, resultSql) => {
+                    if(err) console.log(err)
+                    let title = resultSql[0]["title"];
+                    let startTimeTemp = resultSql[0]["startDate"].split(" ");
+                    let endTimeTemp = resultSql[0]["endDate"].split(" ");
 
-            if(oAuth2Client === 'Timed Out') return console.log(oAuth2Client)
-            google.options({auth: oAuth2Client});
+                    startTime = `${startTimeTemp[0]}T${startTimeTemp[1]}`;
+                    endTime = `${endTimeTemp[0]}T${endTimeTemp[1]}`;
 
-            const res = await calendar.events.insert({
-                calendarId: 'primary',
-                requestBody: {
-                    summary: title,
-                    start: {
-                        dateTime: startTimeTemp,
-                        timeZone: 'Etc/Greenwich'
-                    },
 
-                    end: {
-                        dateTime: endTimeTemp,
-                        timeZone: 'Etc/Greenwich'
+                    if(oAuth2Client === 'Timed Out') return console.log(oAuth2Client)
+                    google.options({auth: oAuth2Client});
+
+                    const res = await calendar.events.insert({
+                        calendarId: 'primary',
+                        requestBody: {
+                            summary: title,
+                            start: {
+                                dateTime: startTime,
+                                timeZone: 'Etc/Greenwich'
+                            },
+
+                            end: {
+                                dateTime: endTime,
+                                timeZone: 'Etc/Greenwich'
+                            }
+                        }
+                    })
+                    if(!sent){
+                        interaction.reply({
+                            content: `${resultSql[0]["title"]} Event added to Google Calender!`,
+                            ephemeral: true
+                        })
+                    }else{
+                        interaction.user.send(`${resultSql[0]["title"]} Event added to Google Calender!`)
                     }
-                }
+                })
             })
         }
     }
