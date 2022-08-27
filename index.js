@@ -1,88 +1,101 @@
 const Discord = require('discord.js')
 const {google} = require('googleapis');
 const {OAuth2Client} = require('google-auth-library');
-const keys = require('./keys.json');
-const constants = require('./constants.json');
+const keys = require('./Creds/keys.json');
+const constants = require('./Creds/constants.json');
 const mysql = require('mysql');
 const customFuncs = require("./dirs/customFunctions");
 const cmdSetup = require("./dirs/cmdSetup");
 const setCreds = require("./dirs/setCreds");
 const {addEventCmd} = require("./dirs/addEventCmd");
 const {calApiReq} = require("./dirs/sendApiReq");
-const {revokeToken} = require("./dirs/revoke");
 const {revokeAccessCmd} = require("./dirs/revokeAccessCmd");
+const admin = require("firebase-admin");
+const serviceAccount = require("./Creds/firebaseCreds.json");
+const {getFirestore} = require("firebase-admin/firestore");
 require('dotenv').config();
 //DONE
 
-let sent = false;
+async function main(){
 
-con = mysql.createConnection({
-    host: "localhost",
-    user: "root",
-    password: "00b",
-    dateStrings: true
-});
+    let con = mysql.createConnection({
+        host: "localhost",
+        user: "root",
+        password: "00b",
+        dateStrings: true
+    });
 
-customFuncs.sqlSetup(con);
+    const firebaseApp = admin.initializeApp({
+        credential: admin.credential.cert(serviceAccount),
+        databaseURL: "https://reminderbot-359419-default-rtdb.europe-west1.firebasedatabase.app"
+    });
 
-const client = new Discord.Client({
-    intents: [
-        Discord.GatewayIntentBits.Guilds,
-        Discord.GatewayIntentBits.GuildMessages,
-        Discord.GatewayIntentBits.GuildMembers,
-        Discord.GatewayIntentBits.GuildBans,
-    ],
-    partials: ['GUILD_MEMBER']
-})
+    customFuncs.sqlSetup(con);
 
-let oAuth2Client = new OAuth2Client(
-    process.env.CLIENT_ID,
-    process.env.CLIENT_SECRET,
-    keys.web.redirect_uris[0]
-);
+    let db = getFirestore();
+    const snapshot = await db.doc('reminders/Z0TZ8GNx81muFkSzJ7Wk').get();
 
-let authorizeUrl = oAuth2Client.generateAuthUrl({
-    access_type: 'offline',
-    scope: constants.scopes
-});
+    const client = new Discord.Client({
+        intents: [
+            Discord.GatewayIntentBits.Guilds,
+            Discord.GatewayIntentBits.GuildMessages,
+            Discord.GatewayIntentBits.GuildMembers,
+            Discord.GatewayIntentBits.GuildBans,
+        ],
+        partials: ['GUILD_MEMBER']
+    })
 
-client.on("ready", () => {
-    let commands = client.application.commands;
-    cmdSetup.cmdSetup(commands);
-    console.log(`Logged in as ${client.user.tag}!`)
-})
+    let oAuth2Client = new OAuth2Client(
+        process.env.CLIENT_ID,
+        process.env.CLIENT_SECRET,
+        keys.web.redirect_uris[0]
+    );
 
-client.on("interactionCreate", async (interaction) => {
-    if(interaction.type === Discord.InteractionType.ApplicationCommand){
-        if(interaction.commandName === 'add-event') {
-            addEventCmd(con, interaction);
+    let authorizeUrl = oAuth2Client.generateAuthUrl({
+        access_type: 'offline',
+        scope: constants.scopes
+    }), sent;
+
+    client.on("ready", () => {
+        let commands = client.application.commands;
+        cmdSetup.cmdSetup(commands);
+        console.log(`Logged in as ${client.user.tag}!`)
+    })
+
+    client.on("interactionCreate", async (interaction) => {
+        if(interaction.type === Discord.InteractionType.ApplicationCommand){
+            if(interaction.commandName === 'add-event') {
+                addEventCmd(con, interaction, db);
+            }
+            if(interaction.commandName === 'revoke-account-access'){
+                await revokeAccessCmd(db, interaction);
+            }
         }
-        if(interaction.commandName === 'revoke-account-access'){
-            revokeAccessCmd(con, interaction);
-        }
-    }
 
-    if(interaction.isButton()){
-        sent = false;
-        if(interaction.customId === "set-event"){
-            con.query(`SELECT * FROM users WHERE userId = '${interaction.user.id}'`, async (err, result) => {
-                if(err) console.log(err);
-                if (result.length === 0) {
-                    await setCreds.AuthCredsFromUser(interaction, con, oAuth2Client, authorizeUrl);
+        if(interaction.isButton()){
+            if(interaction.customId === "set-event"){
+                let sent = false;
+                let doc = await db.doc(`users/${interaction.user.id}`).get();
+                let result = doc.data();
+                if (!result) {
+                    await setCreds.AuthCredsFromUser(interaction, db, oAuth2Client, authorizeUrl, sent);
                 }
                 else{
-
-                    await setCreds.AuthCredsFromDB(interaction, con, oAuth2Client, result, authorizeUrl);
+                    await setCreds.AuthCredsFromDB(interaction, db, oAuth2Client, result, authorizeUrl);
                 }
                 if(Object.keys(oAuth2Client.credentials).length > 0){
-                    console.log(Object.keys(oAuth2Client.credentials).length > 0)
                     google.options({auth: oAuth2Client}); // works
-                    calApiReq(con, interaction, sent) // works
-
+                    await calApiReq(interaction, sent, db) // works
                 }
-            })
+            }
         }
-    }
-})
+    })
 
-client.login(process.env.DISCORD_BOT_TOKEN)
+    client.login(process.env.DISCORD_BOT_TOKEN)
+}
+
+try {
+    main();
+}catch (e) {
+    console.log(e)
+}

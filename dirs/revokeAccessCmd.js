@@ -1,24 +1,23 @@
 const {revokeToken} = require("./revoke");
+const {delFirebaseDocs} = require("./customFunctions");
 module.exports = {
-    revokeAccessCmd: function(con, interaction){
-        con.query(`SELECT access_token FROM users WHERE userId = '${interaction.user.id}'`, async (err, result) => {
-            if(err) console.log(err);
-            if(result.length === 0){
-                interaction.reply({
-                    content: "You do not have a Google account linked to this bot!",
-                    ephemeral: true
-                });
-            }
-            else{
-                revokeToken(result[0].access_token);
-                con.query(`DELETE FROM users WHERE userId = '${interaction.user.id}'`, (err) => {
-                    if (err) console.log(err)
-                    interaction.reply({
-                        content: "Google Authorization revoked!",
-                        ephemeral: true
-                    })
-                })
-            }
-        })
+    revokeAccessCmd: async function(db, interaction){
+        let doc = await db.doc(`users/${interaction.user.id}`).get();
+        let result = doc.data();
+
+        if(!result){
+            interaction.reply({
+                content: "You do not have a Google account linked to this bot!",
+                ephemeral: true
+            });
+        }
+        else{
+            revokeToken(result.access_token);
+            await delFirebaseDocs(`users/${interaction.user.id}`, db);
+            interaction.reply({
+                content: "Google Authorization revoked!",
+                ephemeral: true
+            })
+        }
     }
 }

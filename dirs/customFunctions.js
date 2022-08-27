@@ -1,6 +1,7 @@
 const http = require("http");
 const url = require("url");
 const destroyer = require("server-destroy");
+const {firestore} = require("firebase-admin");
 
 module.exports = {
     timeChecks: function(dateAndTime){
@@ -38,6 +39,18 @@ module.exports = {
             })
             destroyer(server);
         })
+    },
+
+    delFirebaseDocs: async function(path, db){
+        let doc = await db.doc(path).get();
+        let result = doc.data();
+
+        for (const [key, value] of Object.entries(result)) {
+            const res = await db.doc(path).update({
+                key: firestore.FieldValue.delete()
+            });
+        }
+        db.doc(path).delete();
     },
 
     sqlSetup: function(con){

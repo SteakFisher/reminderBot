@@ -17,9 +17,11 @@
     "discord.js": "^14.2.0",
     "dotenv": "^16.0.1",
     "express": "^4.18.1",
+    "firebase-admin": "^11.0.1",
     "google-auth-library": "^8.1.1",
     "googleapis": "^105.0.0",
     "http-terminator": "^3.2.0",
+    "moment": "^2.29.4",
     "mysql": "^2.18.1",
     "server-destroy": "^1.0.1"
   }

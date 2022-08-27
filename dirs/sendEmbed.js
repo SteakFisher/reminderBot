@@ -30,15 +30,15 @@ module.exports = {
                 embeds: [embed],
                 ephemeral: true
             })
+            sent = true;
         }
-        sent = true;
     },
 
     sendErrorEmbed: function(interaction){
         const embed = new Discord.EmbedBuilder()
             .setTitle("Error")
             .setColor("#ff0000")
-            .setDescription("Something went wrong. Please delink your Google Account and try again.")
+            .setDescription("Something went wrong. Please delink your Google Account using the /revoke-account-access command and try again.")
             .setTimestamp()
 
         interaction.user.send({

@@ -1,7 +1,7 @@
 const customFuncs = require("./customFunctions");
 const sendEmbed = require("./sendEmbed");
 module.exports = {
-    addEventCmd: function(con, interaction){
+    addEventCmd: function(con, interaction, db){
         let title = interaction.options.getString('title');
         let startTimeTemp = interaction.options.getString('start-time').split(" ");
         let endTimeTemp = interaction.options.getString('end-time').split(" ");
@@ -34,8 +34,11 @@ module.exports = {
             embeds: [embedBuild[0]],
             components: [embedBuild[1]]
         }).then(embedMessage => {
-            con.query(`INSERT INTO reminders (messageId, guildId, title, startDate, endDate) VALUES ('${embedMessage.id}', '${guild.id}', '${title}', '${startTimeTemp}', '${endTimeTemp}')`, (err, result) => {
-                if(err) console.log(err)
+            const dataSet = db.doc(`reminders/${embedMessage.id}`).set({
+                guildId: guild.id,
+                title: title,
+                startDate: new Date(startTimeTemp),
+                endDate: new Date(endTimeTemp)
             })
         })
 
