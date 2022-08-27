@@ -53,27 +53,4 @@ module.exports = {
         db.doc(path).delete();
     },
 
-    sqlSetup: function(con){
-        con.connect(function(err) {
-            if (err) console.log(err);
-            console.log("Connected!");
-        });
-
-        con.query("CREATE DATABASE IF NOT EXISTS reminderBot", (err, result) => {
-            if(err) console.log(err)
-            console.log("Database created");
-        })
-        con.query("USE reminderBot", (err, result) => {
-            if(err) console.log(err)
-            console.log("Database selected");
-        })
-        con.query("CREATE TABLE IF NOT EXISTS reminders (id INT AUTO_INCREMENT PRIMARY KEY, messageId VARCHAR(30) UNIQUE, guildId VARCHAR(30), title varchar(255), startDate DATETIME, endDate DATETIME)", (err, result) => {
-            if(err) console.log(err)
-            console.log("Table created");
-        })
-        con.query("CREATE TABLE IF NOT EXISTS users (userId VARCHAR(30) PRIMARY KEY, access_token VARCHAR(255), refresh_token VARCHAR(255), expiry_date BIGINT)", (err, result) => {
-            if(err) console.log(err)
-            console.log("Table created");
-        })
-    }
 }

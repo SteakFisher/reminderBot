@@ -18,13 +18,6 @@ require('dotenv').config();
 
 async function main(){
 
-    let con = mysql.createConnection({
-        host: "localhost",
-        user: "root",
-        password: "00b",
-        dateStrings: true
-    });
-
     const firebaseApp = admin.initializeApp({
         credential: admin.credential.cert(serviceAccount),
         databaseURL: "https://reminderbot-359419-default-rtdb.europe-west1.firebasedatabase.app"
@@ -33,7 +26,6 @@ async function main(){
     customFuncs.sqlSetup(con);
 
     let db = getFirestore();
-    const snapshot = await db.doc('reminders/Z0TZ8GNx81muFkSzJ7Wk').get();
 
     const client = new Discord.Client({
         intents: [
