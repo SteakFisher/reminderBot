@@ -1,7 +1,7 @@
 const customFuncs = require("./customFunctions");
 const sendEmbed = require("./sendEmbed");
 module.exports = {
-    addEventCmd: function(con, interaction, db){
+    addEventCmd: function(interaction, db){
         let title = interaction.options.getString('title');
         let startTimeTemp = interaction.options.getString('start-time').split(" ");
         let endTimeTemp = interaction.options.getString('end-time').split(" ");

@@ -3,8 +3,6 @@ const {google} = require('googleapis');
 const {OAuth2Client} = require('google-auth-library');
 const keys = require('./Creds/keys.json');
 const constants = require('./Creds/constants.json');
-const mysql = require('mysql');
-const customFuncs = require("./dirs/customFunctions");
 const cmdSetup = require("./dirs/cmdSetup");
 const setCreds = require("./dirs/setCreds");
 const {addEventCmd} = require("./dirs/addEventCmd");
@@ -22,8 +20,6 @@ async function main(){
         credential: admin.credential.cert(serviceAccount),
         databaseURL: "https://reminderbot-359419-default-rtdb.europe-west1.firebasedatabase.app"
     });
-
-    customFuncs.sqlSetup(con);
 
     let db = getFirestore();
 
@@ -46,7 +42,7 @@ async function main(){
     let authorizeUrl = oAuth2Client.generateAuthUrl({
         access_type: 'offline',
         scope: constants.scopes
-    }), sent;
+    });
 
     client.on("ready", () => {
         let commands = client.application.commands;
@@ -57,7 +53,7 @@ async function main(){
     client.on("interactionCreate", async (interaction) => {
         if(interaction.type === Discord.InteractionType.ApplicationCommand){
             if(interaction.commandName === 'add-event') {
-                addEventCmd(con, interaction, db);
+                addEventCmd(interaction, db);
             }
             if(interaction.commandName === 'revoke-account-access'){
                 await revokeAccessCmd(db, interaction);
