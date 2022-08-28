@@ -8,8 +8,8 @@ module.exports = {
         let channel = interaction.options.getChannel('channel');
         let guild = interaction.guild;
 
-        if(!startTimeTemp[1]) startTimeTemp[1] = '00:00:00';
-        if(!endTimeTemp[1]) endTimeTemp[1] = '00:00:00';
+        if(startTimeTemp.length !== 2) startTimeTemp.push('00:00:00')
+        if(endTimeTemp.length !== 2) endTimeTemp.push('00:00:00')
 
 
         try{

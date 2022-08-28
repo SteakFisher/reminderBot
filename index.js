@@ -56,7 +56,7 @@ async function main(){
                 addEventCmd(interaction, db);
             }
             if(interaction.commandName === 'revoke-account-access'){
-                await revokeAccessCmd(db, interaction);
+                revokeAccessCmd(db, interaction);
             }
         }
 
@@ -73,7 +73,7 @@ async function main(){
                 }
                 if(Object.keys(oAuth2Client.credentials).length > 0){
                     google.options({auth: oAuth2Client}); // works
-                    await calApiReq(interaction, sent, db) // works
+                    calApiReq(interaction, sent, db) // works
                 }
             }
         }
