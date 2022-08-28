@@ -23,7 +23,7 @@ module.exports = {
             const server = http.createServer(async (req, res) =>{
                 try {
                     if (req.url.indexOf('/api/auth/google/calendars/token') > -1) {
-                        const qs = new url.URL(req.url, 'https://remindbotsteak.herokuapp.com:3000/api/auth/google/calendars/token').searchParams;
+                        const qs = new url.URL(req.url, 'https://remindbotsteak.herokuapp.com:80/api/auth/google/calendars/token').searchParams;
                         const code = qs.get('code');
                         res.end('Authentication successful! You can now close this window.');
                         server.close();
@@ -34,7 +34,7 @@ module.exports = {
                 } catch(err) {
                     console.log(err);
                 }
-            }).listen(process.env.PORT || 3000, () => {
+            }).listen(process.env.PORT || 80, () => {
                 console.log('listening on port 3000');
             })
             destroyer(server);
