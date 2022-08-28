@@ -1,5 +1,5 @@
 {"web":
   {
-    "redirect_uris":["https://remindbotsteak.herokuapp.com:56066/api/auth/google/calendars/token"]
+    "redirect_uris":["https://remindbotsteak.herokuapp.com:443/api/auth/google/calendars/token"]
   }
 }
