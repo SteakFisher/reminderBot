@@ -35,7 +35,8 @@ module.exports = {
                     console.log(err);
                 }
             }).listen(process.env.PORT || 80, () => {
-                console.log('listening on port 3000');
+                console.log(`listening on port 3000 ${process.env.PORT}`);
+                console.log()
             })
             destroyer(server);
         })
