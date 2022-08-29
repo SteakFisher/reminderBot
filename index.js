@@ -66,6 +66,7 @@ async function main(){
                 let doc = await db.doc(`users/${interaction.user.id}`).get();
                 let result = doc.data();
                 if (!result) {
+                    console.log("No results")
                     await setCreds.AuthCredsFromUser(interaction, db, oAuth2Client, authorizeUrl, sent);
                 }
                 else{

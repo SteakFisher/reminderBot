@@ -34,6 +34,7 @@ module.exports = {
             })
         }
         catch(err){
+            console.log("Gotcha")
             console.log(err)
             sendEmbed.sendErrorEmbed(interaction);
         }
