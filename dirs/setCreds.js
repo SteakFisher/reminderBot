@@ -25,6 +25,8 @@ module.exports = {
         if(!r[0].tokens.scope){
             return interaction.user.send(`Permissions missing! please check all scopes during authorization.`)
         }
+
+        console.log(r[0].tokens)
         if(r[0].tokens.access_token && r[0].tokens.refresh_token && r[0].tokens.expiry_date){
             const dataSet = await db.doc(`users/${interaction.user.id}`).set({
                 access_token: r[0].tokens.access_token,
@@ -36,6 +38,7 @@ module.exports = {
             })
         }
         else{
+            console.log('gotcha')
             sendEmbed.sendErrorEmbed(interaction)
         }
     },

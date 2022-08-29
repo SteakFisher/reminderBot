@@ -38,13 +38,9 @@ module.exports = {
                 console.log(`listening on port 3000 ${process.env.PORT}`);
                 console.log()
             })
-            server.setTimeout(30000,()=>{
-
+            server.setTimeout(20000,()=>{
                 console.log(
                     "Socket is destroyed due to timeout")
-
-                // Closing server
-                // by using close() api
                 server.close(()=>{
                     console.log("Server is closed")
                 })
