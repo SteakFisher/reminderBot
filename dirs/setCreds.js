@@ -2,9 +2,16 @@ const customFuncs = require("./customFunctions");
 const sendEmbed = require("./sendEmbed");
 const {revokeToken} = require("./revoke");
 const {delFirebaseDocs} = require("./customFunctions");
+const constants = require("../Creds/constants.json");
 
 module.exports = {
-    AuthCredsFromUser: async function (interaction, db, oAuth2Client, authorizeUrl, sent) {
+    AuthCredsFromUser: async function (interaction, db, oAuth2Client, sent) {
+        let authorizeUrl = oAuth2Client.generateAuthUrl({
+            access_type: 'offline',
+            scope: constants.scopes,
+            state: interaction.user.id
+        });
+
         sendEmbed.sendVerifyEmbed(authorizeUrl, interaction, sent);
         const promise1 = new Promise((resolve) => {
             setTimeout(resolve, 30000, "Timed Out");
@@ -43,7 +50,7 @@ module.exports = {
         }
     },
 
-    AuthCredsFromDB: async function (interaction, db, oAuth2Client, result, authorizeUrl) {
+    AuthCredsFromDB: async function (interaction, db, oAuth2Client, result) {
         try{
             oAuth2Client.setCredentials({
                 access_token: result.access_token,
@@ -56,7 +63,7 @@ module.exports = {
             console.log(err);
             revokeToken(result.access_token);
             await delFirebaseDocs(`users/${interaction.user.id}`, db);
-            await this.AuthCredsFromUser(interaction, db, oAuth2Client, authorizeUrl);
+            await this.AuthCredsFromUser(interaction, db, oAuth2Client);
         }
 
     }

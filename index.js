@@ -39,11 +39,6 @@ async function main(){
         keys.web.redirect_uris[0]
     );
 
-    let authorizeUrl = oAuth2Client.generateAuthUrl({
-        access_type: 'offline',
-        scope: constants.scopes
-    });
-
     client.on("ready", () => {
         let commands = client.application.commands;
         cmdSetup.cmdSetup(commands);
@@ -67,10 +62,11 @@ async function main(){
                 let result = doc.data();
                 if (!result) {
                     console.log("No results")
-                    await setCreds.AuthCredsFromUser(interaction, db, oAuth2Client, authorizeUrl, sent);
+                    await setCreds.AuthCredsFromUser(interaction, db, oAuth2Client, sent);
                 }
+
                 else{
-                    await setCreds.AuthCredsFromDB(interaction, db, oAuth2Client, result, authorizeUrl);
+                    await setCreds.AuthCredsFromDB(interaction, db, oAuth2Client, result);
                 }
                 if(Object.keys(oAuth2Client.credentials).length > 0){
                     google.options({auth: oAuth2Client}); // works
