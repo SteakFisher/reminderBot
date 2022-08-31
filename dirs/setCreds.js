@@ -14,7 +14,7 @@ module.exports = {
 
         sendEmbed.sendVerifyEmbed(authorizeUrl, interaction, sent);
 
-        let retVal = await customFuncs.getAuthTokens(oAuth2Client);
+            let retVal = await customFuncs.getAuthTokens(oAuth2Client);
         let r = retVal[0];
         let state = retVal[1];
 
