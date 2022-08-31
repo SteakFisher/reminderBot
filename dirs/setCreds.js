@@ -17,9 +17,6 @@ module.exports = {
         let retVal = await customFuncs.getAuthTokens(oAuth2Client);
         let r = retVal[0];
         let state = retVal[1];
-        console.log(r)
-        console.log(retVal)
-        console.log(state)
 
         if(r === 'Timed Out'){
             return console.log("Took more then 30 seconds to verify, regenerate link and try again!");
@@ -29,7 +26,6 @@ module.exports = {
             return interaction.user.send(`Permissions missing! please check all scopes during authorization.`)
         }
 
-        console.log("Got to token checking")
         if(r.access_token && r.refresh_token && r.expiry_date && state){
             await db.doc(`users/${state}`).set({
                 access_token: r[0].tokens.access_token,
