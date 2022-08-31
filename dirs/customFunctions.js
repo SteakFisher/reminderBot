@@ -35,7 +35,6 @@ module.exports = {
                         const qs = new url.URL(request.url, 'https://remindbotsteak.herokuapp.com:443/api/auth/google/calendars/token').searchParams;
                         const code = qs.get('code');
                         response.end('Authentication successful! You can now close this window.');
-                        app.close();
 
                         const r = await oAuth2Client.getToken(code);
                         resolve([r])
