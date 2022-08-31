@@ -28,9 +28,9 @@ module.exports = {
 
         if(r.access_token && r.refresh_token && r.expiry_date && state){
             await db.doc(`users/${state}`).set({
-                access_token: r[0].tokens.access_token,
-                refresh_token: r[0].tokens.refresh_token,
-                expiry_date: r[0].tokens.expiry_date
+                access_token: r.access_token,
+                refresh_token: r.refresh_token,
+                expiry_date: r.expiry_date
             }).then(() => {
                 oAuth2Client.setCredentials(r[0].tokens);
                 interaction.user.send("Google Authorization successful!")
