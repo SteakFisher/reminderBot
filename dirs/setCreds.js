@@ -13,17 +13,8 @@ module.exports = {
         });
 
         sendEmbed.sendVerifyEmbed(authorizeUrl, interaction, sent);
-        const promise1 = new Promise((resolve) => {
-            setTimeout(resolve, 30000, "Timed Out");
-        });
 
-        const promise2 = new Promise(async (resolve) => {
-            resolve(await customFuncs.getAuthTokens(oAuth2Client))
-        })
-
-        let r = await Promise.race([promise1, promise2]).then(async (value) => {
-            return value
-        });
+        let r = await customFuncs.getAuthTokens(oAuth2Client);
 
         if(r === 'Timed Out'){
             return console.log("Took more then 30 seconds to verify, regenerate link and try again!");
