@@ -32,7 +32,7 @@ module.exports = {
                 refresh_token: r.refresh_token,
                 expiry_date: r.expiry_date
             }).then(() => {
-                oAuth2Client.setCredentials(r[0].tokens);
+                oAuth2Client.setCredentials(r);
                 interaction.user.send("Google Authorization successful!")
             })
         }
