@@ -25,10 +25,8 @@ module.exports = {
         return serverOpen;
     },
 
-    getAuthTokens: function(oAuth2Client){
-        let app = express()
+    getAuthTokens: function(oAuth2Client, app){
         return new Promise((resolve, reject) => {
-            app.set('port', (process.env.PORT || 443));
             app.get('/api/auth/google/calendars/token', async function(request, response) {
                 try{
                     if (request.url.indexOf('/api/auth/google/calendars/token') > -1) {
@@ -45,13 +43,6 @@ module.exports = {
                     console.log(e)
                 }
             })
-
-            if(!serverOpen){
-                app.listen(process.env.PORT || 443, function() {
-                    console.log('App is running, server is listening on port ', app.get('port'));
-                    serverOpen = true;
-                });
-            }
         })
     },
 
