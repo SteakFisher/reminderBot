@@ -41,7 +41,7 @@ module.exports = {
                         resolve([r])
                     }
                 }catch(e){
-                    console.log("Some sorta server error")
+                    console.log(e)
                 }
             })
 
