@@ -14,7 +14,10 @@ module.exports = {
 
         sendEmbed.sendVerifyEmbed(authorizeUrl, interaction, sent);
 
-        let r = await customFuncs.getAuthTokens(oAuth2Client);
+        let retVal = await customFuncs.getAuthTokens(oAuth2Client);
+        let r = retVal[0];
+        let state = retVal[1];
+        console.log(state)
 
         if(r === 'Timed Out'){
             return console.log("Took more then 30 seconds to verify, regenerate link and try again!");

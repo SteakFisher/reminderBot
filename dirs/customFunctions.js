@@ -37,9 +37,8 @@ module.exports = {
                         response.end('Authentication successful! You can now close this window.');
 
                         const r = await oAuth2Client.getToken(code);
-                        r["state"] = qs.get('state');
-                        console.log(`TOKENS ARE ${r}`);
-                        resolve([r])
+                        let state = qs.get('state');
+                        resolve([r, state])
                     }
                 }catch(e){
                     console.log(e)
