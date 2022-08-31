@@ -2,7 +2,6 @@ const Discord = require('discord.js')
 const {google} = require('googleapis');
 const {OAuth2Client} = require('google-auth-library');
 const keys = require('./Creds/keys.json');
-const constants = require('./Creds/constants.json');
 const cmdSetup = require("./dirs/cmdSetup");
 const setCreds = require("./dirs/setCreds");
 const {addEventCmd} = require("./dirs/addEventCmd");
@@ -43,6 +42,8 @@ async function main(){
         let commands = client.application.commands;
         cmdSetup.cmdSetup(commands);
         console.log(`Logged in as ${client.user.tag}!`)
+        app.set('port', (process.env.PORT || 5000));
+
     })
 
     client.on("interactionCreate", async (interaction) => {
