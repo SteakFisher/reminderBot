@@ -29,7 +29,6 @@ module.exports = {
         let app = express()
         return new Promise((resolve, reject) => {
             let server = app.set('port', (process.env.PORT || 5000));
-            serverOpen = true;
             app.get('/api/auth/google/calendars/token', async function(request, response) {
                 try{
                     if (request.url.indexOf('/api/auth/google/calendars/token') > -1) {
@@ -52,7 +51,7 @@ module.exports = {
                     serverOpen = true;
                 });
             }
-            
+
             setTimeout(()=>{
                 server.close();
                 serverOpen = false;
