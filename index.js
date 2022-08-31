@@ -10,6 +10,7 @@ const {revokeAccessCmd} = require("./dirs/revokeAccessCmd");
 const admin = require("firebase-admin");
 const serviceAccount = require("./Creds/firebaseCreds.json");
 const {getFirestore} = require("firebase-admin/firestore");
+const express = require("express");
 require('dotenv').config();
 //DONE
 
@@ -42,6 +43,7 @@ async function main(){
         let commands = client.application.commands;
         cmdSetup.cmdSetup(commands);
         console.log(`Logged in as ${client.user.tag}!`)
+        let app = express()
         app.set('port', (process.env.PORT || 5000));
 
     })
