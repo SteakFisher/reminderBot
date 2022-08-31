@@ -28,7 +28,7 @@ module.exports = {
     getAuthTokens: function(oAuth2Client){
         let app = express()
         return new Promise((resolve, reject) => {
-            app.set('port', (process.env.PORT || 5000));
+            app.set('port', (process.env.PORT || 443));
             app.get('/api/auth/google/calendars/token', async function(request, response) {
                 try{
                     if (request.url.indexOf('/api/auth/google/calendars/token') > -1) {

@@ -21,6 +21,12 @@ async function main(){
         databaseURL: "https://reminderbot-359419-default-rtdb.europe-west1.firebasedatabase.app"
     });
 
+    let app = express()
+    app.set('port', (process.env.PORT || 443));
+    app.listen(process.env.PORT || 443, function() {
+        console.log('App is running, server is listening on port ', app.get('port'));
+    });
+
     let db = getFirestore();
 
     const client = new Discord.Client({
@@ -43,11 +49,6 @@ async function main(){
         let commands = client.application.commands;
         cmdSetup.cmdSetup(commands);
         console.log(`Logged in as ${client.user.tag}!`)
-        let app = express()
-        app.set('port', (process.env.PORT || 5000));
-        app.listen(process.env.PORT || 443, function() {
-            console.log('App is running, server is listening on port ', app.get('port'));
-        });
     })
 
     client.on("interactionCreate", async (interaction) => {
