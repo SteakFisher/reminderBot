@@ -17,6 +17,8 @@ module.exports = {
         let retVal = await customFuncs.getAuthTokens(oAuth2Client);
         let r = retVal[0];
         let state = retVal[1];
+        console.log(r)
+        console.log(retVal)
         console.log(state)
 
         if(r === 'Timed Out'){
