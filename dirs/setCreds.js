@@ -25,13 +25,13 @@ module.exports = {
             return console.log("Took more then 30 seconds to verify, regenerate link and try again!");
         }
 
-        if(!r[0].tokens.scope){
+        if(!r.scope){
             return interaction.user.send(`Permissions missing! please check all scopes during authorization.`)
         }
 
         console.log("Got to token checking")
-        if(r[0].tokens.access_token && r[0].tokens.refresh_token && r[0].tokens.expiry_date){
-            await db.doc(`users/${interaction.user.id}`).set({
+        if(r.access_token && r.refresh_token && r.expiry_date && state){
+            await db.doc(`users/${state}`).set({
                 access_token: r[0].tokens.access_token,
                 refresh_token: r[0].tokens.refresh_token,
                 expiry_date: r[0].tokens.expiry_date
