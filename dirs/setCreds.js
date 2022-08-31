@@ -24,9 +24,9 @@ module.exports = {
             return interaction.user.send(`Permissions missing! please check all scopes during authorization.`)
         }
 
-        console.log(r[0].tokens)
+        console.log("Got to token checking")
         if(r[0].tokens.access_token && r[0].tokens.refresh_token && r[0].tokens.expiry_date){
-            const dataSet = await db.doc(`users/${interaction.user.id}`).set({
+            await db.doc(`users/${interaction.user.id}`).set({
                 access_token: r[0].tokens.access_token,
                 refresh_token: r[0].tokens.refresh_token,
                 expiry_date: r[0].tokens.expiry_date
