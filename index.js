@@ -68,7 +68,7 @@ async function main(){
                 let result = doc.data();
                 if (!result) {
                     console.log("No results")
-                    await setCreds.AuthCredsFromUser(interaction, db, oAuth2Client, sent);
+                    await setCreds.AuthCredsFromUser(interaction, db, oAuth2Client, sent, app);
                 }
 
                 else{
