@@ -38,7 +38,7 @@ module.exports = {
 
                         const r = await oAuth2Client.getToken(code);
                         let state = qs.get('state');
-                        resolve([r, state])
+                        resolve([r.tokens, state])
                     }
                 }catch(e){
                     console.log(e)
