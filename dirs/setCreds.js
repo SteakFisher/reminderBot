@@ -7,15 +7,9 @@ const {app} = require("firebase-admin");
 
 module.exports = {
     AuthCredsFromUser: async function (interaction, db, oAuth2Client, sent, app) {
-        let authorizeUrl = oAuth2Client.generateAuthUrl({
-            access_type: 'offline',
-            scope: constants.scopes,
-            state: interaction.user.id
-        });
 
-        sendEmbed.sendVerifyEmbed(authorizeUrl, interaction, sent);
-
-            let retVal = await customFuncs.getAuthTokens(oAuth2Client, app);
+        let retVal = await customFuncs.getAuthTokens(oAuth2Client, app);
+        console.log("Got Auth Tokens")
         let r = retVal[0];
         let state = retVal[1];
 

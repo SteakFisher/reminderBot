@@ -25,13 +25,10 @@ module.exports = {
             .setDescription(`[**Verify your Google Account**](${authorizeUrl})`)
             .setTimestamp()
 
-        if(!sent){
-            interaction.reply({
-                embeds: [embed],
-                ephemeral: true
-            })
-            sent = true;
-        }
+        interaction.reply({
+            embeds: [embed],
+            ephemeral: true
+        })
     },
 
     sendErrorEmbed: function(interaction){

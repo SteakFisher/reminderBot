@@ -4,6 +4,7 @@ const destroyer = require("server-destroy");
 const {firestore} = require("firebase-admin");
 const express = require('express');
 const timeout = require('connect-timeout');
+const keys = require('../Creds/keys.json');
 let serverOpen = false;
 
 module.exports = {
@@ -30,16 +31,16 @@ module.exports = {
             app.get('/api/auth/google/calendars/token', async function(request, response) {
                 try{
                     if (request.url.indexOf('/api/auth/google/calendars/token') > -1) {
-                        const qs = new url.URL(request.url, 'https://remindbotsteak.herokuapp.com:443/api/auth/google/calendars/token').searchParams;
+                        const qs = new url.URL(request.url, keys.web.redirect_uris[0]).searchParams;
                         const code = qs.get('code');
                         response.end('Authentication successful! You can now close this window.');
 
                         const r = await oAuth2Client.getToken(code);
                         let state = qs.get('state');
-                        console.log(r)
                         resolve([r.tokens, state])
                     }
                 }catch(e){
+                    console.log("Then WHAT?")
                     console.log(e)
                 }
             })
@@ -50,12 +51,14 @@ module.exports = {
         let doc = await db.doc(path).get();
         let result = doc.data();
 
-        for (const [key, value] of Object.entries(result)) {
-            const res = await db.doc(path).update({
-                key: firestore.FieldValue.delete()
-            });
+        if(result){
+            for (const [key, value] of Object.entries(result)) {
+                const res = await db.doc(path).update({
+                    key: firestore.FieldValue.delete()
+                });
+            }
+            db.doc(path).delete();
         }
-        db.doc(path).delete();
     },
 
 }

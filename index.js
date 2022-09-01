@@ -11,6 +11,8 @@ const admin = require("firebase-admin");
 const serviceAccount = require("./Creds/firebaseCreds.json");
 const {getFirestore} = require("firebase-admin/firestore");
 const express = require("express");
+const constants = require("./Creds/constants.json");
+const sendEmbed = require("./dirs/sendEmbed");
 require('dotenv').config();
 //DONE
 
@@ -57,7 +59,7 @@ async function main(){
                 addEventCmd(interaction, db);
             }
             if(interaction.commandName === 'revoke-account-access'){
-                revokeAccessCmd(db, interaction);
+                revokeAccessCmd(db, interaction, oAuth2Client);
             }
         }
 
@@ -67,7 +69,13 @@ async function main(){
                 let doc = await db.doc(`users/${interaction.user.id}`).get();
                 let result = doc.data();
                 if (!result) {
-                    console.log("No results")
+                    let authorizeUrl = oAuth2Client.generateAuthUrl({
+                        access_type: 'offline',
+                        scope: constants.scopes,
+                        state: interaction.user.id
+                    });
+                    sendEmbed.sendVerifyEmbed(authorizeUrl, interaction, sent);
+
                     await setCreds.AuthCredsFromUser(interaction, db, oAuth2Client, sent, app);
                 }
 
