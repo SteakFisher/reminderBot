@@ -39,7 +39,8 @@ module.exports = {
                         let state = qs.get('state');
                         resolve([r.tokens, state])
                     }
-                }catch(e){
+                }
+                catch(e){
                     console.log("Then WHAT?")
                     console.log(e)
                 }
