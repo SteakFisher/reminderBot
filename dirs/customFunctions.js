@@ -26,8 +26,8 @@ module.exports = {
         return serverOpen;
     },
 
-    getAuthTokens: function(oAuth2Client, app){
-        return new Promise((resolve, reject) => {
+    getAuthTokens: async function (oAuth2Client, app, callback) {
+        new Promise((resolve, reject) => {
             app.get('/api/auth/google/calendars/token', async function(request, response) {
                 try{
                     if (request.url.indexOf('/api/auth/google/calendars/token') > -1) {
@@ -37,7 +37,7 @@ module.exports = {
 
                         const r = await oAuth2Client.getToken(code);
                         let state = qs.get('state');
-                        resolve([r.tokens, state])
+                        return await callback([r.tokens, state])
                     }
                 }
                 catch(e){
@@ -61,5 +61,4 @@ module.exports = {
             db.doc(path).delete();
         }
     },
-
 }

@@ -6,21 +6,22 @@ module.exports = {
         let result = doc.data();
 
         if(!result){
+            console.log("Account not linked");
             interaction.reply({
-                content: "You do not have a Google account linked to this bot!",
+                content: "You do not have a Google account linked to this bot! Visit https://myaccount.google.com/permissions?continue=https%3A%2F%2Fmyaccount.google.com%2Fsecurity%3Fpli%3D1 to manually delink!",
                 ephemeral: true
             });
         }
         else{
+            console.log("Account linked revoking access..");
             oAuth2Client.setCredentials({
-                access_token: result.access_token,
                 refresh_token: result.refresh_token,
                 scope: "https://www.googleapis.com/auth/calendar.events",
                 token_type: "Bearer",
                 expiry_date: result.expiry_date
             });
-            let accessToken = await oAuth2Client.getAccessToken()
-            revokeToken(accessToken.token);
+            console.log(await oAuth2Client.getAccessToken())
+            oAuth2Client.revokeCredentials()
             await delFirebaseDocs(`users/${interaction.user.id}`, db);
             interaction.reply({
                 content: "Google Authorization revoked!",

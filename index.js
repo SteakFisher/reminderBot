@@ -13,15 +13,16 @@ const {getFirestore} = require("firebase-admin/firestore");
 const express = require("express");
 const constants = require("./Creds/constants.json");
 const sendEmbed = require("./dirs/sendEmbed");
+const {addReactor} = require("./dirs/addReactor");
 require('dotenv').config();
 //DONE
 
 async function main(){
-
-    const firebaseApp = admin.initializeApp({
+    admin.initializeApp({
         credential: admin.credential.cert(serviceAccount),
         databaseURL: "https://reminderbot-359419-default-rtdb.europe-west1.firebasedatabase.app"
     });
+    let db = getFirestore();
 
     let app = express()
 
@@ -30,7 +31,6 @@ async function main(){
         console.log('App is running, server is listening on port ', app.get('port'));
     });
 
-    let db = getFirestore();
 
     const client = new Discord.Client({
         intents: [
@@ -57,6 +57,7 @@ async function main(){
     client.on("interactionCreate", async (interaction) => {
         if(interaction.type === Discord.InteractionType.ApplicationCommand){
             if(interaction.commandName === 'add-event') {
+                console.log("interaction: add-event cmd")
                 addEventCmd(interaction, db);
             }
             if(interaction.commandName === 'revoke-account-access'){
@@ -70,27 +71,32 @@ async function main(){
                 let doc = await db.doc(`users/${interaction.user.id}`).get();
                 let result = doc.data();
                 if (!result) {
+                    console.log("User not linked! Verification.. ")
                     let authorizeUrl = oAuth2Client.generateAuthUrl({
                         access_type: 'offline',
                         scope: constants.scopes,
                         state: interaction.user.id
                     });
                     sendEmbed.sendVerifyEmbed(authorizeUrl, interaction, sent);
-
-                    await setCreds.AuthCredsFromUser(interaction, db, oAuth2Client, sent, app);
+                    await setCreds.AuthCredsFromUser(interaction, db, oAuth2Client, sent, app)
                 }
-
                 else{
                     await setCreds.AuthCredsFromDB(interaction, db, oAuth2Client, result);
                 }
-                if(Object.keys(oAuth2Client.credentials).length > 0){
-                    google.options({auth: oAuth2Client}); // works
-                    calApiReq(interaction, sent, db) // works
-                }
+                console.log("Got creds from user, sending api request..")
+                setTimeout(async () => {
+                    if(Object.keys(oAuth2Client.credentials).length > 0){
+                        google.options({auth: oAuth2Client}); // works
+                        calApiReq(interaction, sent, db) // works
+                        addReactor(interaction, db);
+                    }
+                    else{
+                        console.log(oAuth2Client.credentials)
+                    }
+                }, 1000);
             }
         }
     })
-
     client.login(process.env.DISCORD_BOT_TOKEN)
 }
 

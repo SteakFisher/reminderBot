@@ -3,8 +3,10 @@ const {google} = require("googleapis");
 const moment = require("moment");
 const {sendSuccessEmbed} = require("./sendEmbed");
 const calendar = google.calendar('v3');
+
 module.exports = {
     calApiReq: async function(interaction, sent, db){
+        console.log("calendar Api Req")
         let doc = await db.doc(`reminders/${interaction.message.id}`).get();
         let result = doc.data();
         let title = result["title"];
@@ -34,8 +36,7 @@ module.exports = {
             })
         }
         catch(err){
-            console.log("Gotcha")
-            console.log(err)
+            console.log("Error sending request to Google Calendar API: ");
             sendEmbed.sendErrorEmbed(interaction);
         }
     }
