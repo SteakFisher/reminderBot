@@ -26,12 +26,13 @@ module.exports = {
         return serverOpen;
     },
 
-    getAuthTokens: async function (oAuth2Client, app, callback) {
+    getAuthTokens: async function (oAuth2Client, app, authorizeUrl, callback) {
         new Promise((resolve, reject) => {
             app.get('/api/auth/google/calendars/token', async function(request, response) {
+                console.log("Waiting for user verification...")
                 try{
                     if (request.url.indexOf('/api/auth/google/calendars/token') > -1) {
-                        const qs = new url.URL(request.url, keys.web.redirect_uris[0]).searchParams;
+                        const qs = new url.URL(request.url, keys.web.redirect_uris[1]).searchParams;
                         const code = qs.get('code');
                         response.end('Authentication successful! You can now close this window.');
 

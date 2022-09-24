@@ -36,5 +36,10 @@ module.exports = {
             name: 'revoke-account-access',
             description: 'Revoke access of Reminder-bot to your account'
         })
+
+        commands.create({
+            name: 'verify-google',
+            description: 'Verify your Google Account with reminder-bot'
+        })
     }
 }

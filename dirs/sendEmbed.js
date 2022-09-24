@@ -18,7 +18,7 @@ module.exports = {
         return [embed, row]
     },
 
-    sendVerifyEmbed: function(authorizeUrl, interaction, sent){
+    sendVerifyEmbed: function(authorizeUrl, interaction){
         const embed = new Discord.EmbedBuilder()
             .setTitle("Verification")
             .setColor("#00ffef")
@@ -43,15 +43,16 @@ module.exports = {
         })
     },
 
-    sendSuccessEmbed: function(interaction){
+    sendSuccessEmbed: async function(interaction){
         const embed = new Discord.EmbedBuilder()
             .setTitle("Success")
             .setColor("#00ffef")
             .setDescription("Successfully added to Google Calender!")
             .setTimestamp()
 
-        interaction.user.send({
-            embeds: [embed]
-        })
+        await interaction.editReply({
+            embeds: [embed],
+            ephemeral: true
+        });
     }
 }

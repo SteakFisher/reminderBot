@@ -4,8 +4,8 @@ const {revokeToken} = require("./revoke");
 const {delFirebaseDocs} = require("./customFunctions");
 
 module.exports = {
-    AuthCredsFromUser: async function (interaction, db, oAuth2Client, sent, app) {
-        return await customFuncs.getAuthTokens(oAuth2Client, app, async (retVal) => {
+    AuthCredsFromUser: async function (interaction, db, oAuth2Client, app, authorizeUrl) {
+        return await customFuncs.getAuthTokens(oAuth2Client, app, authorizeUrl, async (retVal) => {
             console.log("Auth tokens received")
             let r = retVal[0];
             let state = retVal[1];
@@ -25,7 +25,6 @@ module.exports = {
                     refresh_token: r.refresh_token,
                     expiry_date: r.expiry_date
                 }).then(() => {
-                    oAuth2Client.setCredentials(r);
                     interaction.user.send("Google Authorization successful!")
                 })
                 return true

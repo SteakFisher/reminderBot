@@ -13,6 +13,7 @@ module.exports = {
             });
         }
         else{
+            await interaction.deferReply({ ephemeral: true });
             console.log("Account linked revoking access..");
             oAuth2Client.setCredentials({
                 refresh_token: result.refresh_token,
@@ -20,13 +21,14 @@ module.exports = {
                 token_type: "Bearer",
                 expiry_date: result.expiry_date
             });
-            console.log(await oAuth2Client.getAccessToken())
+            await oAuth2Client.getAccessToken()
             oAuth2Client.revokeCredentials()
             await delFirebaseDocs(`users/${interaction.user.id}`, db);
-            interaction.reply({
+            await interaction.editReply({
                 content: "Google Authorization revoked!",
                 ephemeral: true
-            })
+            });
+            console.log("Account access revoked!");
         }
     }
 }

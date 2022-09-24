@@ -45,7 +45,7 @@ async function main(){
     let oAuth2Client = new OAuth2Client(
         process.env.CLIENT_ID,
         process.env.CLIENT_SECRET,
-        keys.web.redirect_uris[0]
+        keys.web.redirect_uris[1]
     );
 
     client.on("ready", () => {
@@ -63,6 +63,16 @@ async function main(){
             if(interaction.commandName === 'revoke-account-access'){
                 revokeAccessCmd(db, interaction, oAuth2Client);
             }
+            if(interaction.commandName === 'verify-google'){
+                let authorizeUrl = oAuth2Client.generateAuthUrl({
+                    access_type: 'offline',
+                    scope: constants.scopes,
+                    state: interaction.user.id
+                });
+                sendEmbed.sendVerifyEmbed(authorizeUrl, interaction);
+                console.log("interaction: verify-google cmd")
+                return setCreds.AuthCredsFromUser(interaction, db, oAuth2Client, app, authorizeUrl)
+            }
         }
 
         if(interaction.isButton()){
@@ -71,29 +81,25 @@ async function main(){
                 let doc = await db.doc(`users/${interaction.user.id}`).get();
                 let result = doc.data();
                 if (!result) {
-                    console.log("User not linked! Verification.. ")
-                    let authorizeUrl = oAuth2Client.generateAuthUrl({
-                        access_type: 'offline',
-                        scope: constants.scopes,
-                        state: interaction.user.id
-                    });
-                    sendEmbed.sendVerifyEmbed(authorizeUrl, interaction, sent);
-                    await setCreds.AuthCredsFromUser(interaction, db, oAuth2Client, sent, app)
+                    interaction.reply({content: "You have not verified your google credentials yet. Please use the " +
+                            "/verify-google command to set your credentials.", ephemeral: true})
+                    console.log("User not linked! Sent verify msg ")
                 }
                 else{
+                    await interaction.deferReply({ ephemeral: true });
                     await setCreds.AuthCredsFromDB(interaction, db, oAuth2Client, result);
+                    console.log("Got creds from db, sending api request..")
+                    setTimeout(async () => {
+                        if(Object.keys(oAuth2Client.credentials).length > 0){
+                            google.options({auth: oAuth2Client}); // works
+                            calApiReq(interaction, sent, db) // works
+                            addReactor(interaction, db);
+                        }
+                        else{
+                            console.log(oAuth2Client.credentials)
+                        }
+                    }, 1000);
                 }
-                console.log("Got creds from user, sending api request..")
-                setTimeout(async () => {
-                    if(Object.keys(oAuth2Client.credentials).length > 0){
-                        google.options({auth: oAuth2Client}); // works
-                        calApiReq(interaction, sent, db) // works
-                        addReactor(interaction, db);
-                    }
-                    else{
-                        console.log(oAuth2Client.credentials)
-                    }
-                }, 1000);
             }
         }
     })
