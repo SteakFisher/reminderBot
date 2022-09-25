@@ -45,7 +45,7 @@ async function main(){
     let oAuth2Client = new OAuth2Client(
         process.env.CLIENT_ID,
         process.env.CLIENT_SECRET,
-        keys.web.redirect_uris[1]
+        keys.web.redirect_uris[0]
     );
 
     client.on("ready", () => {
