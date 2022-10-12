@@ -30,6 +30,15 @@ async function main(){
     app.listen(process.env.PORT || 443, function() {
         console.log('App is running, server is listening on port ', app.get('port'));
     });
+    app.get('/api/auth/home', async function(request, response) {
+        response.send("Hi I'm SteakFisher and I am a backend dev, so can't be bothered coding a website! Thanks for using reminderbot :D")
+    })
+    app.get('/api/auth/privacypolicy', async function(request, response) {
+        response.send("All data collected is merely for Google Authentication, verification procedures, and processing efficiency. \n" +
+            "None of the data is made available to any third party.\n" +
+            "The reminder bot will merely add events to your Google Calendar based upon the embed content above the button, nothing more nothing less.")
+    })
+
 
 
     const client = new Discord.Client({
@@ -98,7 +107,7 @@ async function main(){
                         else{
                             console.log(oAuth2Client.credentials)
                         }
-                    }, 1000);
+                    }, 3000);
                 }
             }
         }
