@@ -31,10 +31,6 @@ async function main(){
         console.log('App is running, server is listening on port ', app.get('port'));
     });
 
-    app.get('/', async function(request, response) {
-        response.sendFile('googlecb4c7e4aca826dab.html', {root: __dirname});
-    })
-
     app.get('/googlecb4c7e4aca826dab.html', async function(request, response) {
         response.sendFile('googlecb4c7e4aca826dab.html', {root: __dirname});
     })

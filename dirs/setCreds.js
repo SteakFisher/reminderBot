@@ -25,7 +25,7 @@ module.exports = {
                     refresh_token: r.refresh_token,
                     expiry_date: r.expiry_date
                 }).then(() => {
-                    interaction.user.send("Google Authorization successful!")
+                    interaction.user.send("Google Authorization successful! All further reactions to events will be synced with your google calendar :D")
                 })
                 return true
             } else {
