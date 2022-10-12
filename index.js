@@ -32,7 +32,7 @@ async function main(){
     });
 
     app.get('/', async function(request, response) {
-        response.sendFile('auth.html', { root: __dirname });
+        response.sendFile('googlecb4c7e4aca826dab.html', {root: __dirname});
     })
 
     app.get('/api/auth/home', async function(request, response) {
