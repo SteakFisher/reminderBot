@@ -30,6 +30,11 @@ async function main(){
     app.listen(process.env.PORT || 443, function() {
         console.log('App is running, server is listening on port ', app.get('port'));
     });
+
+    app.get('/', async function(request, response) {
+        response.sendFile('auth.html', { root: __dirname });
+    })
+
     app.get('/api/auth/home', async function(request, response) {
         response.send("Hi I'm SteakFisher and I am a backend dev, so can't be bothered coding a website! Thanks for using reminderbot :D")
     })
