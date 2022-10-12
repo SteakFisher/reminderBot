@@ -35,6 +35,10 @@ async function main(){
         response.sendFile('googlecb4c7e4aca826dab.html', {root: __dirname});
     })
 
+    app.get('/googlecb4c7e4aca826dab.html', async function(request, response) {
+        response.sendFile('googlecb4c7e4aca826dab.html', {root: __dirname});
+    })
+
     app.get('/api/auth/home', async function(request, response) {
         response.send("Hi I'm SteakFisher and I am a backend dev, so can't be bothered coding a website! Thanks for using reminderbot :D")
     })
