@@ -44,11 +44,6 @@ async function main(){
     })
 
 
-
-
-
-
-
     const client = new Discord.Client({
         intents: [
             Discord.GatewayIntentBits.Guilds,
