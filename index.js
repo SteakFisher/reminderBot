@@ -31,18 +31,21 @@ async function main(){
         console.log('App is running, server is listening on port ', app.get('port'));
     });
 
+    app.get('/', async function(request, response) {
+        response.sendFile('homepage.html', {root: __dirname});
+    })
+
+    app.get('/api/auth/privacypolicy', async function(request, response) {
+        response.sendFile('privacyPolicy.html', {root: __dirname});
+    })
+
     app.get('/googlecb4c7e4aca826dab.html', async function(request, response) {
         response.sendFile('googlecb4c7e4aca826dab.html', {root: __dirname});
     })
 
-    app.get('/api/auth/home', async function(request, response) {
-        response.send("Hi I'm SteakFisher and I am a backend dev, so can't be bothered coding a website! Thanks for using reminderbot :D")
-    })
-    app.get('/api/auth/privacypolicy', async function(request, response) {
-        response.send("All data collected is merely for Google Authentication, verification procedures, and processing efficiency. \n" +
-            "None of the data is made available to any third party.\n" +
-            "The reminder bot will merely add events to your Google Calendar based upon the embed content above the button, nothing more nothing less.")
-    })
+
+
+
 
 
 
