@@ -4,6 +4,7 @@ module.exports = {
         commands.create({
             name: 'add-event',
             description: 'Send an "Add to Google Calender" button',
+
             options: [
                 {
                     name: 'title',
@@ -32,10 +33,10 @@ module.exports = {
             ]
         })
 
-            commands.create({
-                name: 'revoke-account-access',
-                description: 'Revoke access of Reminder-bot to your account'
-            })
+        commands.create({
+            name: 'revoke-account-access',
+            description: 'Revoke access of Reminder-bot to your account'
+        })
 
         commands.create({
             name: 'verify-google',
