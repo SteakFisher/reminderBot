@@ -35,6 +35,10 @@ async function main(){
         response.sendFile('homepage.html', {root: __dirname});
     })
 
+    app.get('/logoremind.jpg', async function(request, response) {
+        response.sendFile('logoremind.jpg', {root: __dirname});
+    })
+
     app.get('/api/auth/privacypolicy', async function(request, response) {
         response.sendFile('privacyPolicy.html', {root: __dirname});
     })
