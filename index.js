@@ -37,6 +37,7 @@ async function main(){
     
     app.get('/test', async function(request, response) {
         console.log(request.url);
+        response.send(200);
     })
 
     app.get('/logoremind.jpg', async function(request, response) {
