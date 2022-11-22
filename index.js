@@ -34,6 +34,10 @@ async function main(){
     app.get('/', async function(request, response) {
         response.sendFile('homepage.html', {root: __dirname});
     })
+    
+    app.get('/test', async function(request, response) {
+        console.log(request.url);
+    })
 
     app.get('/logoremind.jpg', async function(request, response) {
         response.sendFile('logoremind.jpg', {root: __dirname});
