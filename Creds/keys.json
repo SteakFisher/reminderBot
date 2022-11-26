@@ -1,9 +1,0 @@
-{"web":
-  {
-    "redirect_uris":[
-      "https://remindbotsteak.herokuapp.com:443/api/auth/google/calendars/token",
-      "http://localhost:3000/api/auth/google/calendars/token",
-      "https://reminder-bot-steakfisher.vercel.app/"
-    ]
-  }
-}
