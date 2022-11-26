@@ -35,9 +35,9 @@ async function main(){
         response.sendFile('homepage.html', {root: __dirname});
     })
     
-    app.get('/test', async function(request, response) {
-        console.log(request.url);
-        response.send(200);
+    app.get('/success', async function(request, response) {
+        console.log("Success");
+        response.send("Success");
     })
 
     app.get('/logoremind.jpg', async function(request, response) {
