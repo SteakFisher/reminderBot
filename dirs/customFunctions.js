@@ -53,13 +53,14 @@ module.exports = {
         let doc = await db.doc(path).get();
         let result = doc.data();
 
-        if(result){
-            for (const [key, value] of Object.entries(result)) {
-                const res = await db.doc(path).update({
-                    key: firestore.FieldValue.delete()
-                });
-            }
-            db.doc(path).delete();
+        if(!result) return
+        
+        for (const [key, value] of Object.entries(result)) {
+            const res = await db.doc(path).update({
+                key: firestore.FieldValue.delete()
+            });
         }
+        db.doc(path).delete();
+        
     },
 }
